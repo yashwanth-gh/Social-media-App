@@ -85,9 +85,10 @@ export class AuthService {
 
     //* --method to login into existing account
 
-    async login(user) {
+    async login(user:{email:string,password:string}) {
         try {
-            return await this.account.createEmailSession(user.email, user.password)
+            const session = await this.account.createEmailSession(user.email, user.password)
+            return session;
         } catch (error) {
             console.log("Appwrite Auth :: login :: Error ", error);
         }

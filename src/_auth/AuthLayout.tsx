@@ -9,13 +9,13 @@ const AuthLayout = () => {
       <Navigate to={"/"}/>
     ):(
       <>
-      <section className='flex flex-1 justify-center items-center flex-col py-10'>
-        <Outlet/>
-      </section>
       <img 
       src="/public/assets/images/auth_transparent.svg"
       alt="side-image"
       className='hidden xl:block h-screen w-40% object-cover bg-no-repeat' />
+      <section className='flex flex-1 justify-center items-center flex-col py-10'>
+        <Outlet/>
+      </section>
       </>
     )}
     </>
