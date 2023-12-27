@@ -5,7 +5,7 @@
 
 import { INewUser } from "@/types";
 import { conf, conf as config } from "../../conf/conf";
-import { ID, Client, Account, Avatars, Databases } from 'appwrite';
+import { ID, Client, Account, Avatars, Databases, Query } from 'appwrite';
 import { Url } from "url";
 
 
@@ -101,7 +101,11 @@ export class AuthService {
 
     async getCurrentUser() {
         try {
-            return await this.account.get();
+            //* account.get will return you  : User(which has property called $id)
+            const currentAccount =  await this.account.get();
+            if(!currentAccount)throw Error;
+            const currentUser = await this.listUserDocumect(currentAccount);
+            return currentUser?.documents[0];
         } catch (error) {
             console.log("Appwrite Auth :: getCurrentUser :: Error ", error);
         }
@@ -109,6 +113,20 @@ export class AuthService {
     }
     //* -----------------------------------------------------------------------------
 
+    async listUserDocumect(currentAccount:{$id:string}){
+        try {
+            const currentUser = await this.databases.listDocuments(
+                conf.appwriteDatabaseId,
+                conf.appwriteUserCollectionId,
+                [Query.equal("accountId",currentAccount.$id)]
+            );
+            if(!currentUser)throw Error;
+
+            return currentUser;
+        } catch (error) {
+            console.log("Appwrite Auth :: listUserDocument :: Error ", error)
+        }
+    }
     //* -----------------------------------------------------------------------------
 
     //* --method to logout of existing account
