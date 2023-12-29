@@ -48,7 +48,7 @@ export class AuthService {
                     username: user.username,
                     imageUrl: avatarUrl,
                 });
-
+                
                 return newUser;
             } else {
                 throw Error;
@@ -103,10 +103,10 @@ export class AuthService {
         try {
             //* account.get will return you  : User(which has property called $id)
             const currentAccount =  await this.account.get();
-            // console.log("currentAccount ", currentAccount);
+            console.log("currentAccount ", currentAccount);
             if(!currentAccount)throw Error;
             const currentUser = await this.listUserDocumect(currentAccount);
-            // console.log(currentUser)
+            console.log(currentUser)
             return currentUser?.documents[0];
         } catch (error) {
             console.log("Appwrite Auth :: getCurrentUser :: Error ", error);

@@ -21,7 +21,7 @@ import {
   useCreateNewUserAccount,
   useSignInAccount,
 } from "@/lib/react-query/queriesAndMutations";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "@/redux/store";
 import { checkAuthUser } from "@/redux/slices/authSlice";
 
@@ -30,7 +30,7 @@ const SignupForm = () => {
   const { mutateAsync: createUserAccount, isPending: isCreatingUser } =
     useCreateNewUserAccount();
   const { mutateAsync: userLogin, isPending: isSigningIn } = useSignInAccount();
-  const dispatch = useAppDispatch();
+  const dispatch = useDispatch();
   const authState = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
 
@@ -58,7 +58,7 @@ const SignupForm = () => {
       });
     }
 
-    const session = userLogin({
+    const session = await userLogin({
       email: values.email,
       password: values.password,
     });
@@ -72,16 +72,20 @@ const SignupForm = () => {
       return
     }
 
-    dispatch(checkAuthUser()); //FIXME:type errror
+    await dispatch(checkAuthUser() as any)  //FIXME:type errror
+    console.log("authState", authState);
     const isLoggedIn = authState.isAuthenticated;
-    if (isLoggedIn) {
-      form.reset();
-      navigate("/");
-    } else {
-      return toast({
-        title: "Sign-in failed!",
-      });
-    }
+      console.log("isLoggedIn", isLoggedIn);
+      if (isLoggedIn) {
+        form.reset();
+        navigate("/");
+      } else {
+        console.log("else is executed");
+        return toast({
+          title: "Sign-in failed!",
+        });
+      }
+
   }
 
   return (

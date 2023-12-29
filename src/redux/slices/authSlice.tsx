@@ -12,7 +12,7 @@ type IInitialStateType = {
 
 //^ -- this is a async thunk which handles asynchronous promises or API --
 
-export const checkAuthUser = createAsyncThunk<IUser>("checkAuthUser", async () => {
+export const checkAuthUser = createAsyncThunk("checkAuthUser", async () => {
   const currentAccount = await authService.getCurrentUser();
   return currentAccount;
 });
