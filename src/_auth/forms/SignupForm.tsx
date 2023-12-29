@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 
+//^ -------------------- Internal Components ------------------------
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,25 +17,23 @@ import { SignupValidation } from "@/lib/validation";
 import { z } from "zod";
 import Loader from "@/components/shared/Loader";
 import { Link, useNavigate } from "react-router-dom";
-// import authService from '@/lib/appwrite/auth'
 import {
   useCreateNewUserAccount,
   useSignInAccount,
 } from "@/lib/react-query/queriesAndMutations";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, useAppDispatch } from "@/redux/store";
-import { checkAuthUser } from "@/redux/slices/authSlice";
+import { checkAuthUser, setIsAuthenticated } from "@/redux/slices/authSlice";
+import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 
+//^ -------------------- Return Function ------------------------
 const SignupForm = () => {
-  const { toast } = useToast();
-  const { mutateAsync: createUserAccount, isPending: isCreatingUser } =
-    useCreateNewUserAccount();
-  const { mutateAsync: userLogin, isPending: isSigningIn } = useSignInAccount();
-  const dispatch = useDispatch();
-  const authState = useSelector((state: RootState) => state.auth);
-  const navigate = useNavigate();
+  const { toast } = useToast();   //* ShadCN-ui
+  const { mutateAsync: createUserAccount, isPending: isCreatingUser } = useCreateNewUserAccount();    //*React Query
+  const { mutateAsync: userLogin, isPending: isSigningIn } = useSignInAccount();    //*React Query
+  const dispatch = useAppDispatch();    //* RTK
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);    //* RTK
+  const navigate = useNavigate();   //* React router
 
-  // 1. Define your form.
+  //* 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
     defaultValues: {
@@ -45,12 +44,12 @@ const SignupForm = () => {
     },
   });
 
-  // 2. Define a submit handler.
+  //* 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+    //& Do something with the form values.
+    //& ✅ This will be type-safe and validated.
 
-    const newUser = await createUserAccount(values);
+    const newUser = await createUserAccount(values);    //* apprite authentication 
     if (!newUser) {
       return toast({
         title: "Sign-up failed!",
@@ -61,7 +60,7 @@ const SignupForm = () => {
     const session = await userLogin({
       email: values.email,
       password: values.password,
-    });
+    });     //* apprite authentication 
 
     if (!session) {
       toast({
@@ -69,25 +68,30 @@ const SignupForm = () => {
         description: "Sorry! Try again",
       });
       navigate("/sign-in");
-      return
+      return;
     }
 
-    await dispatch(checkAuthUser() as any)  //FIXME:type errror
-    console.log("authState", authState);
-    const isLoggedIn = authState.isAuthenticated;
-      console.log("isLoggedIn", isLoggedIn);
-      if (isLoggedIn) {
-        form.reset();
-        navigate("/");
-      } else {
-        console.log("else is executed");
-        return toast({
-          title: "Sign-in failed!",
-        });
-      }
-
+    //^ -------------------------- RTK asyncThunk is Dispatched -------------------------
+    dispatch(checkAuthUser() as any).then(() => {
+      dispatch(setIsAuthenticated(true));
+    });
   }
 
+  //^ ------------------------------- UseEffect ------------------------------------
+  //* checks is isAuthentication state is true redirects to HOME
+  useEffect(() => {
+     if (isAuthenticated) {
+      form.reset();
+      navigate("/");
+    } else {
+      console.log("else is executed");
+      toast({
+        title: "Sign-in failed!",
+      });
+    }
+  },[isAuthenticated])
+
+  //^ ------------------------------- Return ------------------------------------
   return (
     <Form {...form}>
       <div className="sm:w-420 flex-center flex-col px-4 py-10 ">
