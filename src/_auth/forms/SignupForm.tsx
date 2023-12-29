@@ -15,15 +15,24 @@ import { Input } from "@/components/ui/input";
 import { SignupValidation } from "@/lib/validation";
 import { z } from "zod";
 import Loader from "@/components/shared/Loader";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // import authService from '@/lib/appwrite/auth'
-import { useCreateNewUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations";
+import {
+  useCreateNewUserAccount,
+  useSignInAccount,
+} from "@/lib/react-query/queriesAndMutations";
+import { useSelector } from "react-redux";
+import { RootState, useAppDispatch } from "@/redux/store";
+import { checkAuthUser } from "@/redux/slices/authSlice";
 
 const SignupForm = () => {
   const { toast } = useToast();
   const { mutateAsync: createUserAccount, isPending: isCreatingUser } =
     useCreateNewUserAccount();
-  const {mutateAsync:userLogin,isPending:isSigningIn} = useSignInAccount();
+  const { mutateAsync: userLogin, isPending: isSigningIn } = useSignInAccount();
+  const dispatch = useAppDispatch();
+  const authState = useSelector((state: RootState) => state.auth);
+  const navigate = useNavigate();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -50,17 +59,29 @@ const SignupForm = () => {
     }
 
     const session = userLogin({
-      email:values.email,
-      password : values.password,
-    })
+      email: values.email,
+      password: values.password,
+    });
 
     if (!session) {
-      return toast({
+      toast({
         title: "Sign-in failed!",
         description: "Sorry! Try again",
       });
+      navigate("/sign-in");
+      return
     }
-    console.log(newUser);
+
+    dispatch(checkAuthUser()); //FIXME:type errror
+    const isLoggedIn = authState.isAuthenticated;
+    if (isLoggedIn) {
+      form.reset();
+      navigate("/");
+    } else {
+      return toast({
+        title: "Sign-in failed!",
+      });
+    }
   }
 
   return (

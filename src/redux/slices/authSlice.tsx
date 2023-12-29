@@ -1,6 +1,7 @@
 import { IUser } from "@/types";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import authService from "@/lib/appwrite/auth";
+
 
 type IInitialStateType = {
   user: IUser;
@@ -11,7 +12,7 @@ type IInitialStateType = {
 
 //^ -- this is a async thunk which handles asynchronous promises or API --
 
-export const checkAuthUser = createAsyncThunk("checkAuthUser", async () => {
+export const checkAuthUser = createAsyncThunk<IUser>("checkAuthUser", async () => {
   const currentAccount = await authService.getCurrentUser();
   return currentAccount;
 });
@@ -36,13 +37,13 @@ export const authSlice = createSlice({
   name: "auth",
   initialState: INITIAL_STATE,
   reducers: {
-    setUser: (state, action) => {
+    setUser: (state, action:PayloadAction<IUser>) => {
       state.user = action.payload;
     },
-    setIsAuthenticated: (state, action) => {
+    setIsAuthenticated: (state, action:PayloadAction<boolean>) => {
       state.isAuthenticated = action.payload;
     },
-    setIsLoading: (state, action) => {
+    setIsLoading: (state, action:PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
   },
@@ -52,8 +53,11 @@ export const authSlice = createSlice({
     }),
     builder.addCase(checkAuthUser.fulfilled,(state,action)=>{
         const payload = action.payload;
+        // const payload = action.payload as IUser | null | undefined;
 
         if(payload){
+
+          //FIXME:$ID ERROR
             state.user.id = payload.$id || '';
             state.user.name = payload.name || '';
             state.user.username = payload.username || '';
@@ -61,6 +65,7 @@ export const authSlice = createSlice({
             state.user.imageUrl = payload.imageUrl || '';
             state.user.bio = payload.bio || '';
             state.isAuthenticated = true;
+
         }
         state.isLoading = false;
     }),
