@@ -10,7 +10,7 @@
   }
 
   body {
-    @apply bg-color-hunt-1 text-white min-h-screen font-inter;
+    @apply bg-color-hunt-2   text-white min-h-screen font-inter;
   }
 }
 
@@ -230,11 +230,11 @@
 
   /* Left sidebar */
   .leftsidebar {
-    @apply hidden md:flex px-6 py-10 flex-col justify-between min-w-[270px] bg-dark-2;
+    @apply hidden md:flex px-6 py-5 flex-col justify-between min-w-[90px] bg-color-hunt-1;
   }
 
   .leftsidebar-link {
-    @apply rounded-lg base-medium hover:bg-primary-500 transition;
+    @apply rounded-lg base-medium transition;
   }
 
   /* Post Card */
@@ -248,13 +248,21 @@
 
   /* Topbar */
   .topbar {
-    @apply sticky top-0 z-50 md:hidden bg-dark-2 w-full;
+    @apply sticky top-0 z-50 md:hidden bg-color-hunt-1 w-full;
   }
 
   /* User card */
   .user-card {
     @apply flex-center flex-col gap-4 border border-dark-4 rounded-[20px] px-5 py-8;
   }
+
+  /* ToolTip */
+  .tooltip_container{
+    @apply relative inline-block ;
+  }
+  .tooltip{
+    @apply absolute px-1 py-0.5 bg-cyan-300 text-color-hunt-1 rounded-sm opacity-100 ;
+  } 
 }
 
 @layer components {

@@ -133,9 +133,10 @@ export class AuthService {
 
     //* --method to logout of existing account
 
-    async logout({ }) {
+    async logout() {
         try {
             //^ for logout of just current device use [ this.account.deleteSession('current'); ]
+            //^ for logout of just all devices use [ this.account.deleteSessions(); ]
             return await this.account.deleteSessions();
         } catch (error) {
             console.log("Appwrite Auth :: logout :: Error ", error);

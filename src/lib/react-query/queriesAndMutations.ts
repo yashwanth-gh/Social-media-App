@@ -20,3 +20,8 @@ export const useSignInAccount = ()=>{
         })=>authService.login(user)
     });
 }
+export const useSignOutAccount = ()=>{
+    return useMutation({
+        mutationFn : ()=>authService.logout()
+    });
+}

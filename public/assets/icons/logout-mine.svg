@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="25"
+   viewBox="0 -960 720 720"
+   width="25"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="logout-mine (2).svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
+  <path
+     d="M 80,-240 Q 47,-240 23.5,-263.5 0,-287 0,-320 V -880 Q 0,-913 23.5,-936.5 47,-960 80,-960 h 280 v 80 H 80 v 560 h 280 v 80 z m 440,-160 -55,-58 102,-102 H 240 v -80 h 327 l -102,-102 55,-58 200,200 z"
+     id="path1"
+     style="fill:#08d5ec;fill-opacity:1;stroke-width:1;stroke-dasharray:none"
+     inkscape:label="path1" />
+</svg>

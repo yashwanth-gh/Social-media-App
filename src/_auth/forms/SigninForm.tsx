@@ -53,6 +53,7 @@ const SigninForm = () => {
 
     if (!session) {
       return toast({
+        variant: "destructive",
         title: "Sign-in failed!",
         description: "Sorry! Try again",
       });
@@ -72,7 +73,9 @@ const SigninForm = () => {
       navigate("/");
     } else {
       toast({
+        variant: "destructive",
         title: "Sign-in failed!",
+        description: "Try again.",
       });
     }
   }, [isAuthenticated]);
