@@ -26,12 +26,13 @@ import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 
 //^ -------------------- Return Function ------------------------
 const SignupForm = () => {
-  const { toast } = useToast();   //* ShadCN-ui
-  const { mutateAsync: createUserAccount, isPending: isCreatingUser } = useCreateNewUserAccount();    //*React Query
-  const { mutateAsync: userLogin, isPending: isSigningIn } = useSignInAccount();    //*React Query
-  const dispatch = useAppDispatch();    //* RTK
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);    //* RTK
-  const navigate = useNavigate();   //* React router
+  const { toast } = useToast(); //* ShadCN-ui
+  const { mutateAsync: createUserAccount, isPending: isCreatingUser } =
+    useCreateNewUserAccount(); //*React Query
+  const { mutateAsync: userLogin, isPending: isSigningIn } = useSignInAccount(); //*React Query
+  const dispatch = useAppDispatch(); //* RTK
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated); //* RTK
+  const navigate = useNavigate(); //* React router
 
   //* 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -49,7 +50,7 @@ const SignupForm = () => {
     //& Do something with the form values.
     //& ✅ This will be type-safe and validated.
 
-    const newUser = await createUserAccount(values);    //* apprite authentication 
+    const newUser = await createUserAccount(values); //* apprite authentication
     if (!newUser) {
       return toast({
         title: "Sign-up failed!",
@@ -60,7 +61,7 @@ const SignupForm = () => {
     const session = await userLogin({
       email: values.email,
       password: values.password,
-    });     //* apprite authentication 
+    }); //* apprite authentication
 
     if (!session) {
       toast({
@@ -80,16 +81,15 @@ const SignupForm = () => {
   //^ ------------------------------- UseEffect ------------------------------------
   //* checks is isAuthentication state is true redirects to HOME
   useEffect(() => {
-     if (isAuthenticated) {
+    if (isAuthenticated) {
       form.reset();
       navigate("/");
     } else {
-      console.log("else is executed");
       toast({
         title: "Sign-in failed!",
       });
     }
-  },[isAuthenticated])
+  }, [isAuthenticated]);
 
   //^ ------------------------------- Return ------------------------------------
   return (
@@ -189,7 +189,7 @@ const SignupForm = () => {
             type="submit"
             className="text-color-hunt-4 shad-button_primary"
           >
-            {isCreatingUser ? (
+            {isCreatingUser ? (   //FIXME: try using isloading state from store
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>

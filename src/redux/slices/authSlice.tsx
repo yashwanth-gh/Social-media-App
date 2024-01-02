@@ -64,7 +64,7 @@ export const authSlice = createSlice({
             state.user.email = payload.email || '';
             state.user.imageUrl = payload.imageUrl || '';
             state.user.bio = payload.bio || '';
-            // state.isAuthenticated = true;
+            state.isAuthenticated = true;
 
         }
         state.isLoading = false;

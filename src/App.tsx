@@ -13,18 +13,21 @@ import { checkAuthUser } from "./redux/slices/authSlice";
 const App = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  // useEffect(() => {
-  //   const cookieFallback = localStorage.getItem("cookieFallback");
-  //   // cookieFallback === null
-  //   // cookieFallback === undefined
-  //   if (
-  //     cookieFallback === "[]"
-  //   ) {
-  //     navigate("/sign-in");
-  //   }
 
-  //   dispatch(checkAuthUser() as any);
-  // }, []);
+  useEffect(() => {
+    const cookieFallback = localStorage.getItem("cookieFallback");
+
+    if (
+      cookieFallback === "[]" ||
+      cookieFallback === undefined ||
+      cookieFallback === null
+    ) {
+      navigate("/sign-in");
+    }
+    else{
+      dispatch(checkAuthUser() as any);
+    }
+  }, []);
 
   return (
     <main className="flex h-screen">
