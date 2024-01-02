@@ -26,8 +26,8 @@ const Topbar = () => {
             <img
               src="/public/assets/images/logo.svg"
               alt="logo"
-              width={90}
-              height={90}
+              width={70}
+              height={70}
             />
             {/* <h1 className='text-2xl font-bold'>tweetbook</h1> */}
           </Link>
