@@ -37,6 +37,7 @@ module.exports = {
         'color-hunt-2' : '#181A29',
         'color-hunt-3' : '#B6BBC4',
         'color-hunt-4' : '#F0ECE5',
+        'color-hunt-5' : '#08c4ec',
       },
       screens: {
         'xs': '480px',

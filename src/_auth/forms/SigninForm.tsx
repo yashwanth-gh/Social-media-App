@@ -147,7 +147,7 @@ const SigninForm = () => {
                 <Loader /> Loading...
               </div>
             ) : (
-              "Signup"
+              "Sign in"
             )}
           </Button>
 
@@ -157,7 +157,7 @@ const SigninForm = () => {
               to={"/sign-up"}
               className="text-primary-500 text-small-semibold underline"
             >
-              Sign up
+              Sign in
             </Link>
           </p>
         </form>

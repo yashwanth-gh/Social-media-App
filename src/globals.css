@@ -264,6 +264,12 @@
   .tooltip{
     @apply absolute px-1 py-0.5 bg-cyan-300 text-color-hunt-1 rounded-sm opacity-100 ;
   } 
+
+  /*Floating Button*/
+  .floating-btn{
+    @apply z-50 absolute bottom-full right-5 bg-color-hunt-5 px-3 py-7 mb-3 border-4 border-double border-color-hunt-1 rounded-full md:hidden;
+    /* @apply z-50 flex-between sticky right-0 bg-color-hunt-1 px-5 py-4 md:hidden; */
+  }
 }
 
 @layer components {

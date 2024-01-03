@@ -35,27 +35,23 @@ const Topbar = () => {
 
         {isAuthenticated ? (
           <div className="flex gap-4">
-            <Tooltip tip={"Profile"}>
-              <Link to={`/profile/${user.id}`} className="flex-center gap-2">
-                <img
-                  src={
-                    user.imageUrl ||
-                    "/public/assets/icons/profile-placeholder.svg"
-                  }
-                  alt="profile"
-                  className="w-10 h-10 rounded-full"
-                />
-              </Link>
-            </Tooltip>
+            <Link to={`/profile/${user.id}`} className="flex-center gap-2">
+              <img
+                src={
+                  user.imageUrl ||
+                  "/public/assets/icons/profile-placeholder.svg"
+                }
+                alt="profile"
+                className="w-10 h-10 rounded-full"
+              />
+            </Link>
 
             <Button onClick={() => logout()}>
-              <Tooltip tip={"Logout"} className="bottom-1/2 left-full ml-2">
-                <img
-                  src="/public/assets/icons/logout-mine.svg"
-                  alt="logout"
-                  className=""
-                />
-              </Tooltip>
+              <img
+                src="/public/assets/icons/logout-mine.svg"
+                alt="logout"
+                className=""
+              />
             </Button>
           </div>
         ) : (

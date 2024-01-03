@@ -37,7 +37,7 @@ const Leftbar = () => {
 
         <ul className="flex flex-col gap-4 items-center h-3/4 justify-evenly">
           {sidebarLinks.map((link: INavLink) => {
-            const isActive = pathname.includes(link.route);
+            const isActive = pathname == link.route;
             return (
               <li key={link.label} className="leftsidebar-link">
                 <NavLink to={link.route}>
