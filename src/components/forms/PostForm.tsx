@@ -3,17 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-});
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,9 +15,25 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "../ui/textarea";
 import FileUploder from "../shared/FileUploder";
+import { PostFormValidation } from "@/lib/validation";
+import { Models } from "appwrite";
+import { useCreatePost } from "@/lib/react-query/queriesAndMutations";
+import { useAppSelector } from "@/redux/hooks";
+import { useToast } from "../ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import Loader from "../shared/Loader";
 
-const PostForm = ({post}) => {
+type PostFormProps = {
+  post?: Models.Document;
+};
+
+const PostForm = ({ post }: PostFormProps) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
+  const user = useAppSelector((state) => state.auth.user);
+  const { mutateAsync: createPost, isPending: isLoadingCreate } =
+    useCreatePost();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   //^-------------------- autofocus related -------------------------
   //^-- autofocus on desktop only not mobile
@@ -42,18 +51,34 @@ const PostForm = ({post}) => {
 
   //^-------------------- Form related -------------------------
   // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof PostFormValidation>>({
+    resolver: zodResolver(PostFormValidation),
     defaultValues: {
-      username: "",
+      caption: post ? post?.caption : "",
+      file: [],
+      location: post ? post?.location : "",
+      tags: post ? post.tags.join(",") : "",
     },
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof PostFormValidation>) {
+    const newPost = await createPost({
+      ...values,
+      userId: user.id,
+    });
+
+    if (!newPost) {
+      toast({
+        title: "Sorry!, Please try again",
+      });
+    } else {
+      navigate("/");
+      return toast({
+        title: "Your Post is Uploaded!",
+      });
+
+    }
   }
   return (
     <Form {...form}>
@@ -86,10 +111,11 @@ const PostForm = ({post}) => {
             <FormItem>
               <FormLabel className="shad-form_label">Add file</FormLabel>
               <FormControl>
-                <FileUploder 
-                fileChange ={field.onChange}
-                mediaUrl ={post?.imageUrl}
-                isMobile = {isMobile}/>
+                <FileUploder
+                  fileChange={field.onChange}
+                  mediaUrl={post?.imageUrl}
+                  isMobile={isMobile}
+                />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
@@ -102,7 +128,12 @@ const PostForm = ({post}) => {
             <FormItem>
               <FormLabel className="shad-form_label">Add location</FormLabel>
               <FormControl>
-                <Input type="text" className="shad-input" placeholder="ex: Bengaluru"/>
+                <Input
+                  type="text"
+                  className="shad-input"
+                  placeholder="ex: Bengaluru"
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
@@ -113,17 +144,33 @@ const PostForm = ({post}) => {
           name="tags"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Add Tags (separated by comma " , ")</FormLabel>
+              <FormLabel className="shad-form_label">
+                Add Tags (separated by comma " , ")
+              </FormLabel>
               <FormControl>
-                <Input type="text" className="shad-input" placeholder="ex: vacation, travel.."/>
+                <Input
+                  type="text"
+                  className="shad-input"
+                  placeholder="ex: vacation, travel.."
+                  {...field}
+                />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
           )}
         />
-        <div className='flex justify-end items-center gap-3'>
-        <Button variant="outline" type="button">Cancel</Button>
-        <Button type="submit" className="shad-button_primary whitespace-nowrap">Submit</Button>
+        <div className="flex justify-end items-center gap-3">
+          <Button variant="outline" type="button">
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="shad-button_primary whitespace-nowrap"
+          >
+            {isLoadingCreate?(
+              <Loader/>
+            ):("Submit")}
+          </Button>
         </div>
       </form>
     </Form>
