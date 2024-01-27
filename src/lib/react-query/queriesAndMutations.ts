@@ -13,6 +13,7 @@ export const useCreateNewUserAccount = ()=>{
         mutationFn : (user:INewUser)=>authService.createAccount(user)
     });
 }
+
 export const useSignInAccount = ()=>{
     return useMutation({
         mutationFn : (user:{
@@ -21,11 +22,13 @@ export const useSignInAccount = ()=>{
         })=>authService.login(user)
     });
 }
+
 export const useSignOutAccount = ()=>{
     return useMutation({
         mutationFn : ()=>authService.logout()
     });
 }
+
 export const useCreatePost = ()=>{
     const queryClient = useQueryClient();
     return useMutation({
@@ -44,3 +47,70 @@ export const useGetRecentPosts = ()=>{
         queryFn:()=>authService.getRecentPosts()
     })
 }
+
+export const useLikePost = ()=>{
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn : ({postId,likesArray}:{postId:string,likesArray : string[]})=>authService.likePost(postId,likesArray),
+        onSuccess : (data)=>{
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_POST_BY_ID,data?.$id]
+            })
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_CURRENT_USER]
+            })
+        }
+    })
+}
+
+export const useSavePost = ()=>{
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn : ({postId,userId}:{postId:string,userId : string})=>authService.savePost(postId,userId),
+        onSuccess : ()=>{
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_CURRENT_USER]
+            })
+        }
+    })
+}
+
+export const useDeleteSavedPost = ()=>{
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn : (savedRecordId:string)=>authService.deleteSavedPost(savedRecordId),
+        onSuccess : ()=>{
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_CURRENT_USER]
+            })
+        }
+    })
+}
+
+export const useGetCurrentUser = ()=>{
+    return useQuery({
+        queryKey:[QUERY_KEYS.GET_CURRENT_USER],
+        queryFn : ()=>authService.getCurrentUser()
+    })
+} 

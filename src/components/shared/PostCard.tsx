@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAppSelector } from "@/redux/hooks";
+import PostStats from "./PostStats";
 
 type PostCardProp = {
   post: Models.Document;
@@ -110,20 +111,7 @@ const PostCard = ({ post }: PostCardProp) => {
         </Link>
       </div>
 
-      <div className="post-panel">
-        <div>
-          <span className="material-symbols-outlined">thumb_up</span>
-        </div>
-        <div>
-          <span className="material-symbols-outlined">chat_bubble</span>
-        </div>
-        <div>
-          <span className="material-symbols-outlined">bookmark</span>
-        </div>
-        <div>
-          <span className="material-symbols-outlined">share</span>
-        </div>
-      </div>
+      <PostStats post={post} userId={user.id}/>
     </div>
   );
 };

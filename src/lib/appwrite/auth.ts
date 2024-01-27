@@ -277,6 +277,66 @@ export class AuthService {
     //         return null;
     //     }
     // }
+
+    async likePost(postId:string,likesArray:string[]){
+        try {
+            const response =await this.databases.updateDocument(
+                config.appwriteDatabaseId,
+                config.appwritePostCollectionId,
+                postId,
+                {likes:likesArray}
+            )
+            if(!response){
+                console.log("ERROR :: likePost :: There was an error whiel updating likes")
+                throw Error;
+            }
+            return response;
+        } catch (error) {
+            console.log("Appwrite Auth :: likePost :: Error ", error);
+            return null;
+        }
+    }
+
+    async savePost(postId:string,userId:string){
+        try {
+            const response =await this.databases.createDocument(
+                config.appwriteDatabaseId,
+                config.appwriteSavesCollectionId,
+                ID.unique(),
+                {
+                    user : userId,
+                    post : postId
+                }
+            )
+            if(!response){
+                console.log("ERROR :: savePost :: There was an error saving post")
+                throw Error;
+            }
+            return response;
+        } catch (error) {
+            console.log("Appwrite Auth :: savePost :: Error ", error);
+            return null;
+        }
+    }
+
+    async deleteSavedPost(savedRecordId:string){
+        try {
+            const response =await this.databases.deleteDocument(
+                config.appwriteDatabaseId,
+                config.appwriteSavesCollectionId,
+                savedRecordId,
+
+            )
+            if(!response){
+                console.log("ERROR :: deleteSavedPost :: There was an deleting saved post")
+                throw Error;
+            }
+            return {status:'ok'};
+        } catch (error) {
+            console.log("Appwrite Auth :: deleteSavedPost :: Error ", error);
+            return null;
+        }
+    }
     
 };
 //^ ----------------------------------------------------------------------------
