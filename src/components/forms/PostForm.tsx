@@ -17,21 +17,25 @@ import { Textarea } from "../ui/textarea";
 import FileUploder from "../shared/FileUploder";
 import { PostFormValidation } from "@/lib/validation";
 import { Models } from "appwrite";
-import { useCreatePost } from "@/lib/react-query/queriesAndMutations";
+import { useCreatePost, useUpdatePost } from "@/lib/react-query/queriesAndMutations";
 import { useAppSelector } from "@/redux/hooks";
 import { useToast } from "../ui/use-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Loader from "../shared/Loader";
 
 type PostFormProps = {
-  post?: Models.Document;
+  post?: Models.Document| null | undefined;
+  action : "create" | "update";
 };
 
-const PostForm = ({ post }: PostFormProps) => {
+const PostForm = ({ post,action }: PostFormProps) => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 700);
   const user = useAppSelector((state) => state.auth.user);
   const { mutateAsync: createPost, isPending: isLoadingCreate } =
     useCreatePost();
+  const { mutateAsync: updatePost, isPending: isLoadingUpdate } =
+    useUpdatePost();
+
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -63,6 +67,23 @@ const PostForm = ({ post }: PostFormProps) => {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof PostFormValidation>) {
+
+    if(post && action==="update"){
+      const updatedPost = await updatePost({
+        ...values,
+        postId:post?.$id,
+        imageId:post?.imageId,
+        imageUrl:post?.imageUrl
+      })
+      if(!updatedPost){
+        toast({
+          title: "Sorry!, Please try again",
+        });
+      }
+
+      return navigate(`/posts/${post.$id}`);
+    }
+
     const newPost = await createPost({
       ...values,
       userId: user.id,
@@ -160,16 +181,19 @@ const PostForm = ({ post }: PostFormProps) => {
           )}
         />
         <div className="flex justify-end items-center gap-3">
+          <Link to={'/'} onClick={()=>toast({title:'Changes discarded'})}>
           <Button variant="outline" type="button">
             Cancel
           </Button>
+          </Link>
           <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap"
+            disabled={isLoadingCreate||isLoadingUpdate}
           >
-            {isLoadingCreate?(
+            {(isLoadingCreate||isLoadingUpdate)?(
               <Loader/>
-            ):("Submit")}
+            ):(`${action} post`)}
           </Button>
         </div>
       </form>

@@ -10,7 +10,7 @@ type FileUploadProp = {
 
 const FileUploder = ({ fileChange, mediaUrl, isMobile }: FileUploadProp) => {
   const [file, setFile] = useState<File[]>([]);
-  const [fileUrl, setFileUrl] = useState("");
+  const [fileUrl, setFileUrl] = useState(mediaUrl);
   //FIXME: remove upload svg for mobile
 
   const onDrop = useCallback(

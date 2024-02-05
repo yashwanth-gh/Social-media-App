@@ -6,8 +6,8 @@ import {
 } from "@/lib/react-query/queriesAndMutations";
 import { checkIsLiked } from "@/lib/utils";
 import { Models } from "appwrite";
-import { Check } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import Loader from "./Loader";
 
 type PostStatsProps = {
   post: Models.Document;
@@ -21,8 +21,8 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   const [isSaved, setIsSaved] = useState(false);
 
   const { mutate: likePost } = useLikePost();
-  const { mutate: savePost } = useSavePost();
-  const { mutate: deleteSavedPost } = useDeleteSavedPost();
+  const { mutate: savePost,isPending:isSavingPost } = useSavePost();
+  const { mutate: deleteSavedPost,isPending:isDeletingSavedPost } = useDeleteSavedPost();
   const { data: currentUser } = useGetCurrentUser();
 
   const savedPostRecord = currentUser?.save?.find(
@@ -49,7 +49,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
 
   const handleSavePost = (e: React.MouseEvent) => {
     e.stopPropagation();
-    console.log(savedPostRecord);
+    // console.log(savedPostRecord);
 
     if (savedPostRecord) {
       setIsSaved(false);
@@ -80,16 +80,21 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
         <p className="small-medium lg:base-medium">0</p>
       </div>
       <div className="flex-center gap-2">
-        <img
-          src={`${
-            !isSaved
-              ? "/public/assets/icons/savePost.svg"
-              : "/public/assets/icons/savePostFilled.svg"
-          }
-        `}
-          alt="save"
-          onClick={handleSavePost}
-        />
+        {(isSavingPost || isDeletingSavedPost)?(
+          <Loader/>
+        ):(
+                  <img
+                  src={`${
+                    !isSaved
+                      ? "/public/assets/icons/savePost.svg"
+                      : "/public/assets/icons/savePostFilled.svg"
+                  }
+                `}
+                  alt="save"
+                  onClick={handleSavePost}
+                />
+        )}
+
       </div>
       <div>
         <span className="material-symbols-outlined">share</span>

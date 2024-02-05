@@ -3,9 +3,11 @@
 //? -- refer this article (it is built using this article ) LINK:(  https://appwrite.io/docs/references/cloud/client-web/account  )
 
 
-import { INewPost, INewUser } from "@/types";
+import { INewPost, INewUser, IUpdatePost } from "@/types";
 import { conf, conf as config } from "../../conf/conf";
 import { ID, Client, Account, Avatars, Databases, Query, Storage } from 'appwrite';
+import { Url } from "url";
+import { ImageIcon } from "lucide-react";
 // import { Url } from "url";
 
 
@@ -200,6 +202,7 @@ export class AuthService {
 
         } catch (error) {
             console.log("Appwrite Auth :: uploadFile :: Error ", error)
+            return null;
         }
     }
 
@@ -213,10 +216,15 @@ export class AuthService {
                 "top",
                 100
             )
-            if (!fileUrl) throw Error;
+            if (!fileUrl) {
+                console.log("ERROR :: getfilePreview :: error while fetching file url")
+                return null;
+            }
+
             return fileUrl;
         } catch (error) {
             console.log("Appwrite Auth :: getFilePreview :: Error ", error)
+            return null;
         }
     }
 
@@ -234,7 +242,7 @@ export class AuthService {
 
     }
 
-   async getRecentPosts() {
+    async getRecentPosts() {
         try {
             const posts = await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
@@ -247,29 +255,29 @@ export class AuthService {
             return posts;
         } catch (error) {
             console.log("Appwrite Auth :: getRecentPosts :: Error ", error);
-           
+
         }
-    } 
+    }
     // async getRecentPosts() {
     //     try {
     //         console.log("Attempting to get recent posts...");
-            
+
     //         if (!this.databases) {
     //             console.error("Databases or listDocuments function is undefined.");
     //             throw Error("Databases or listDocuments function is undefined.");
     //         }
-    
+
     //         const posts = await this.databases.listDocuments(
     //             conf.appwriteDatabaseId,
     //             conf.appwritePostCollectionId,
     //             [Query.orderDesc(""), Query.limit(20)]
     //         );
-    
+
     //         if (!posts) {
     //             console.error("No posts retrieved.");
     //             throw Error("No posts retrieved.");
     //         }
-    
+
     //         console.log("Recent posts retrieved successfully:", posts);
     //         return posts;
     //     } catch (error) {
@@ -278,15 +286,15 @@ export class AuthService {
     //     }
     // }
 
-    async likePost(postId:string,likesArray:string[]){
+    async likePost(postId: string, likesArray: string[]) {
         try {
-            const response =await this.databases.updateDocument(
+            const response = await this.databases.updateDocument(
                 config.appwriteDatabaseId,
                 config.appwritePostCollectionId,
                 postId,
-                {likes:likesArray}
+                { likes: likesArray }
             )
-            if(!response){
+            if (!response) {
                 console.log("ERROR :: likePost :: There was an error whiel updating likes")
                 throw Error;
             }
@@ -297,18 +305,18 @@ export class AuthService {
         }
     }
 
-    async savePost(postId:string,userId:string){
+    async savePost(postId: string, userId: string) {
         try {
-            const response =await this.databases.createDocument(
+            const response = await this.databases.createDocument(
                 config.appwriteDatabaseId,
                 config.appwriteSavesCollectionId,
                 ID.unique(),
                 {
-                    user : userId,
-                    post : postId
+                    user: userId,
+                    post: postId
                 }
             )
-            if(!response){
+            if (!response) {
                 console.log("ERROR :: savePost :: There was an error saving post")
                 throw Error;
             }
@@ -319,25 +327,122 @@ export class AuthService {
         }
     }
 
-    async deleteSavedPost(savedRecordId:string){
+    async deleteSavedPost(savedRecordId: string) {
         try {
-            const response =await this.databases.deleteDocument(
+            const response = await this.databases.deleteDocument(
                 config.appwriteDatabaseId,
                 config.appwriteSavesCollectionId,
                 savedRecordId,
 
             )
-            if(!response){
-                console.log("ERROR :: deleteSavedPost :: There was an deleting saved post")
+            if (!response) {
+                console.log("ERROR :: deleteSavedPost :: There was an error deleting saved post")
                 throw Error;
             }
-            return {status:'ok'};
+            return { status: 'ok' };
         } catch (error) {
             console.log("Appwrite Auth :: deleteSavedPost :: Error ", error);
             return null;
         }
     }
-    
+
+    async getPostById(postId: string) {
+        try {
+            const post = await this.databases.getDocument(
+                conf.appwriteDatabaseId,
+                conf.appwritePostCollectionId,
+                postId
+            )
+            if (!post) {
+                console.log("ERROR :: getPostById :: There was an error fetching post by id")
+                return null;
+            }
+
+            return post;
+
+        } catch (error) {
+            console.log("Appwrite Auth :: deleteSavedPost :: Error ", error);
+            return null;
+        }
+    }
+
+    async updatePost(post: IUpdatePost) {
+        const hasFileToUpdate = post.file.length > 0;
+
+        try {
+            let image = {
+                imageUrl: post.imageUrl,
+                imageId: post.imageId
+            }
+
+            if (hasFileToUpdate) {
+
+                //~ Upload image received to storage i.e.bucket
+                const uploadedFile = await this.uploadFile(post.file[0]);
+                // console.log(uploadedFile);
+                if (!uploadedFile) throw Error;
+
+                //~ get file URL
+                //! this getFilePreview returns promise if that is resolved then get href
+                //* i learnt this by console loging fileUrl and then figured it out
+                const fileUrl = await this.getFilePreview(uploadedFile.$id)
+
+                // console.log(fileUrl);
+
+                if (!fileUrl) {
+                    //may be file is corrupted so delete it 
+                    await this.deleteFile(uploadedFile.$id);
+                    throw Error;
+                }
+
+                image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id }
+            }
+
+
+            //Convert the tags to array
+            const tags = post.tags?.replace(/ /g, '').split(",") || [];
+
+            const updatedPost = await this.databases.updateDocument(
+                conf.appwriteDatabaseId,
+                conf.appwritePostCollectionId,
+                post.postId,
+                {
+                    caption: post.caption,
+                    imageUrl: image.imageUrl,
+                    imageId: image.imageId,
+                    location: post.location,
+                    tags: tags,
+                }
+            )
+
+            if (!updatedPost) {
+                await this.deleteFile(post.imageId);
+                throw Error;
+            }
+
+            return updatedPost;
+        } catch (error) {
+            console.log("Appwrite Auth :: updatePost :: Error ", error);
+            return null;
+        }
+    }
+
+    async deletePost(postId: string, ImageId: string) {
+        if (!postId || !ImageId) throw Error;
+        try {
+            await this.databases.deleteDocument(
+                conf.appwriteDatabaseId,
+                conf.appwritePostCollectionId,
+                postId
+            )
+
+            return { status: 'ok' };
+        } catch (error) {
+            console.log("Appwrite Auth :: updatePost :: Error ", error);
+            return null;
+        }
+    }
+
 };
 //^ ----------------------------------------------------------------------------
 

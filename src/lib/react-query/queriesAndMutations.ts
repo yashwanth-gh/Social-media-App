@@ -5,8 +5,9 @@ import {
     useInfiniteQuery
 } from "@tanstack/react-query";
 import authService from "../appwrite/auth";
-import { INewPost, INewUser } from "@/types";
+import { INewPost, INewUser, IUpdatePost } from "@/types";
 import { QUERY_KEYS } from "./queryKeys";
+import { string } from "zod";
 
 export const useCreateNewUserAccount = ()=>{
     return useMutation({
@@ -114,3 +115,38 @@ export const useGetCurrentUser = ()=>{
         queryFn : ()=>authService.getCurrentUser()
     })
 } 
+
+export const useGetPostById = (postId:string)=>{
+    return useQuery({
+        queryKey : [QUERY_KEYS.GET_POST_BY_ID,postId],
+        queryFn : ()=>authService.getPostById(postId),
+        enabled:true,
+    })
+}
+
+export const useUpdatePost = ()=>{
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn : (post:IUpdatePost)=>authService.updatePost(post),
+        onSuccess : (data)=>{
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_POST_BY_ID,data?.$id]
+            })
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+        }
+    })
+}
+
+export const useDeletePost = ()=>{
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn : ({postId,imageId}:{postId:string,imageId:string})=>authService.deletePost(postId,imageId),
+        onSuccess : ()=>{
+            queryClient.invalidateQueries({
+                queryKey : [QUERY_KEYS.GET_RECENT_POSTS]
+            })
+        }
+    })
+}

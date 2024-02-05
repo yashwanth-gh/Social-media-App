@@ -9,12 +9,12 @@ import AuthLayout from "./_auth/AuthLayout";
 import { Toaster } from "@/components/ui/toaster";
 import { useDispatch } from "react-redux";
 import { checkAuthUser } from "./redux/slices/authSlice";
-import { useToast } from "./components/ui/use-toast";
+
 
 const App = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { toast } = useToast(); //* ShadCN-ui
+
 
   useEffect(() => {
     const cookieFallback = localStorage.getItem("cookieFallback");
@@ -27,9 +27,6 @@ const App = () => {
       navigate("/sign-in");
     } else {
       dispatch(checkAuthUser() as any);
-      toast({
-        description: "You are Signed-in!",
-      });
     }
   }, []);
 

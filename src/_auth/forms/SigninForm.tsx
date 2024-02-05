@@ -30,6 +30,7 @@ const SigninForm = () => {
   const { mutateAsync: userLogin, isPending: isSigningIn } = useSignInAccount(); //*React Query
   const dispatch = useAppDispatch(); //* RTK
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated); //* RTK
+  const isLoadingInRTKStore = useAppSelector((state) => state.auth.isLoading); //* RTK
   const navigate = useNavigate(); //* React router
 
   //* 1. Define your form.
@@ -141,8 +142,9 @@ const SigninForm = () => {
           <Button
             type="submit"
             className="text-color-hunt-4 shad-button_primary"
+            disabled={isSigningIn || isLoadingInRTKStore}
           >
-            {isSigningIn ? (
+            {(isSigningIn||isLoadingInRTKStore) ? (
               <div className="flex-center gap-2">
                 <Loader /> Loading...
               </div>

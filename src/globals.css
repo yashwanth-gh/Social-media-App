@@ -147,7 +147,7 @@
 
   /* Home */
   .home-container {
-    @apply flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-5 md:px-8 lg:p-14 custom-scrollbar;
+    @apply flex flex-col flex-1 items-center gap-10 overflow-scroll py-10 px-4 md:px-8 lg:p-14 custom-scrollbar;
   }
 
   .home-posts {
@@ -247,7 +247,7 @@
     @apply h-64 xs:h-[400px] lg:h-[450px] w-full rounded-[10px] object-cover mb-3;
   }
   .post-panel {
-    @apply  bg-color-hunt-1 w-full flex justify-between py-1 px-2 rounded-lg;
+    @apply  bg-color-hunt-1 w-full flex flex-1 justify-between py-1 rounded-lg;
   }
 
   /* Topbar */
