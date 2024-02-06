@@ -430,11 +430,16 @@ export class AuthService {
     async deletePost(postId: string, ImageId: string) {
         if (!postId || !ImageId) throw Error;
         try {
+            console.log("Running before")
+            console.log(                conf.appwriteDatabaseId,
+                conf.appwritePostCollectionId,
+                postId)
             await this.databases.deleteDocument(
                 conf.appwriteDatabaseId,
                 conf.appwritePostCollectionId,
                 postId
             )
+            console.log("Running after")
 
             return { status: 'ok' };
         } catch (error) {

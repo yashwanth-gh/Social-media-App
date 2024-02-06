@@ -1,6 +1,6 @@
 import { formatDateString } from "@/lib/utils";
 import { Models } from "appwrite";
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 // *--------------------shad-cn/ui---------------------
@@ -12,16 +12,37 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useAppSelector } from "@/redux/hooks";
 import PostStats from "./PostStats";
+import { useDeletePost } from "@/lib/react-query/queriesAndMutations";
+import CustomDialog from "./CustomDialog";
+import BirdLoader from "./BirdLoader";
 
 type PostCardProp = {
   post: Models.Document;
 };
 
 const PostCard = ({ post }: PostCardProp) => {
-  const user = useAppSelector((state) => state.auth.user);
+  const [open, setOpen] = useState(false);  //this is for delete confirmation dialog
 
+  const user = useAppSelector((state) =>state.auth.user);
+  const {
+    mutateAsync: permanentlyDeletePost,
+    isPending: isPermanentlyDeletePost,
+  } = useDeletePost();
+
+  const handleDeletePost = async()=>{
+   const res = await permanentlyDeletePost({postId:post.$id,imageId:post.imageId})
+    if(res?.status === 'ok'){
+      console.log("deleted")
+    }else{
+      console.log("not deleted",res?.status)
+    }
+  }
+  if(isPermanentlyDeletePost){
+    return <BirdLoader/>
+  }
   return (
     <div className="post-card">
       <div className="flex-between">
@@ -56,7 +77,10 @@ const PostCard = ({ post }: PostCardProp) => {
               <span className="material-symbols-outlined">more_vert</span>
             </DropdownMenuTrigger>
             {user.id == post.creator.$id ? (
-              <DropdownMenuContent className="bg-color-hunt-1 border">
+              <DropdownMenuContent
+                className="bg-color-hunt-1 border"
+                forceMount
+              >
                 <DropdownMenuLabel className="text-center">
                   Your Post
                 </DropdownMenuLabel>
@@ -67,9 +91,12 @@ const PostCard = ({ post }: PostCardProp) => {
                     &nbsp; Edit Post
                   </DropdownMenuItem>
                 </Link>
-                <DropdownMenuItem className="text-red cursor-pointer">
+                <DropdownMenuItem
+                  className="text-red cursor-pointer"
+                  onClick={() => setOpen(true)}
+                >
                   <span className="material-symbols-outlined">delete</span>
-                  &nbsp;Delete
+                  &nbsp; Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
             ) : (
@@ -85,6 +112,7 @@ const PostCard = ({ post }: PostCardProp) => {
               </DropdownMenuContent>
             )}
           </DropdownMenu>
+          <CustomDialog open={open} setOpen={setOpen} OkFunction={handleDeletePost}/>
         </div>
       </div>
 
@@ -111,7 +139,7 @@ const PostCard = ({ post }: PostCardProp) => {
         </Link>
       </div>
 
-      <PostStats post={post} userId={user.id}/>
+      <PostStats post={post} userId={user.id} />
     </div>
   );
 };

@@ -3,11 +3,15 @@ import {
   useGetCurrentUser,
   useLikePost,
   useSavePost,
+  
 } from "@/lib/react-query/queriesAndMutations";
 import { checkIsLiked } from "@/lib/utils";
 import { Models } from "appwrite";
 import React, { useState, useEffect } from "react";
 import Loader from "./Loader";
+import { Link } from "react-router-dom";
+import { toast } from "../ui/use-toast";
+import AddComment from "./AddComment";
 
 type PostStatsProps = {
   post: Models.Document;
@@ -17,12 +21,14 @@ type PostStatsProps = {
 const PostStats = ({ post, userId }: PostStatsProps) => {
   const likesList = post.likes.map((user: Models.Document) => user.$id);
 
+
   const [likes, setLikes] = useState(likesList);
   const [isSaved, setIsSaved] = useState(false);
 
   const { mutate: likePost } = useLikePost();
-  const { mutate: savePost,isPending:isSavingPost } = useSavePost();
-  const { mutate: deleteSavedPost,isPending:isDeletingSavedPost } = useDeleteSavedPost();
+  const { mutate: savePost, isPending: isSavingPost } = useSavePost();
+  const { mutate: deleteSavedPost, isPending: isDeletingSavedPost } =
+    useDeleteSavedPost();
   const { data: currentUser } = useGetCurrentUser();
 
   const savedPostRecord = currentUser?.save?.find(
@@ -60,6 +66,15 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     }
   };
 
+  const sharePost = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const postUrl = window.location.href + `posts/${post.$id}`;
+    navigator.clipboard.writeText(postUrl);
+    return toast({
+      title: "Post url copied to clipboard",
+    });
+  };
+
   return (
     <div className="post-panel">
       <div className="flex-center gap-2">
@@ -72,31 +87,33 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
         `}
           alt="like"
           onClick={handleLikePost}
+          className="cursor-pointer"
         />
         <p className="small-medium lg:base-medium">{likes.length}</p>
       </div>
-      <div className="flex-center gap-2">
-        <img src="/public/assets/icons/comment.svg" alt="like" />
-        <p className="small-medium lg:base-medium">0</p>
-      </div>
-      <div className="flex-center gap-2">
-        {(isSavingPost || isDeletingSavedPost)?(
-          <Loader/>
-        ):(
-                  <img
-                  src={`${
-                    !isSaved
-                      ? "/public/assets/icons/savePost.svg"
-                      : "/public/assets/icons/savePostFilled.svg"
-                  }
-                `}
-                  alt="save"
-                  onClick={handleSavePost}
-                />
-        )}
 
+      <div className="flex-center gap-2">
+          <AddComment post={post}/>
       </div>
-      <div>
+
+      <div className="flex-center gap-2">
+        {isSavingPost || isDeletingSavedPost ? (
+          <Loader />
+        ) : (
+          <img
+            src={`${
+              !isSaved
+                ? "/public/assets/icons/savePost.svg"
+                : "/public/assets/icons/savePostFilled.svg"
+            }
+                `}
+            alt="save"
+            onClick={handleSavePost}
+            className="cursor-pointer"
+          />
+        )}
+      </div>
+      <div onClick={sharePost} className="cursor-pointer">
         <span className="material-symbols-outlined">share</span>
       </div>
     </div>
