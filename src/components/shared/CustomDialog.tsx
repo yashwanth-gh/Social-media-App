@@ -8,7 +8,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 type CustomDialogProp = {
@@ -29,7 +28,7 @@ const CustomDialog = ({ open, setOpen, OkFunction }: CustomDialogProp) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={OkFunction}>Continue</AlertDialogAction>
+          <AlertDialogAction onClick={OkFunction} className="bg-color-hunt-5 text-black">Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -12,7 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useAppSelector } from "@/redux/hooks";
 import PostStats from "./PostStats";
 import { useDeletePost } from "@/lib/react-query/queriesAndMutations";
@@ -115,17 +114,17 @@ const PostCard = ({ post }: PostCardProp) => {
           <CustomDialog open={open} setOpen={setOpen} OkFunction={handleDeletePost}/>
         </div>
       </div>
-
+      <Link to={`/posts/${post.$id}`}>
       <div className="mt-4">
         <img
           src={post.imageUrl || "/public/assets/icons/profile-placeholder.svg"}
           alt="post-image"
-          className="post-card_img"
+          className='post-card_img'
         />
       </div>
 
       <div>
-        <Link to={`/posts/${post.$id}`}>
+        
           <div className="small-medium lg:base-medium py-5">
             <p>{post.caption}</p>
             <ul className="flex gap-1 mt-2 flex-wrap">
@@ -136,8 +135,8 @@ const PostCard = ({ post }: PostCardProp) => {
               ))}
             </ul>
           </div>
-        </Link>
       </div>
+        </Link>
 
       <PostStats post={post} userId={user.id} />
     </div>

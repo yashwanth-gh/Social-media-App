@@ -156,11 +156,11 @@ export class AuthService {
         //~ get file URL
         //! this getFilePreview returns promise if that is resolved then get href
         //* i learnt this by console loging fileUrl and then figured it out
-        const fileUrl = await this.getFilePreview(uploadedFile.$id)
+        const PreviewFileUrl = await this.getFilePreview(uploadedFile.$id)
             .then(res => res?.href)
-        // console.log(fileUrl);
+        // console.log(PreviewFileUrl);
 
-        if (!fileUrl) {
+        if (!PreviewFileUrl) {
             //may be file is corrupted so delete it 
             await this.deleteFile(uploadedFile.$id);
             throw Error;
@@ -176,7 +176,7 @@ export class AuthService {
             {
                 creator: post.userId,
                 caption: post.caption,
-                imageUrl: fileUrl,
+                imageUrl: PreviewFileUrl,
                 imageId: uploadedFile.$id,
                 location: post.location,
                 tags: tags,
@@ -430,22 +430,33 @@ export class AuthService {
     async deletePost(postId: string, ImageId: string) {
         if (!postId || !ImageId) throw Error;
         try {
-            console.log("Running before")
-            console.log(                conf.appwriteDatabaseId,
-                conf.appwritePostCollectionId,
-                postId)
             await this.databases.deleteDocument(
                 conf.appwriteDatabaseId,
                 conf.appwritePostCollectionId,
                 postId
             )
-            console.log("Running after")
 
             return { status: 'ok' };
         } catch (error) {
             console.log("Appwrite Auth :: updatePost :: Error ", error);
             return null;
         }
+    }
+
+    async GetFileForView(FileId: string) {
+        try {
+            const fileUrl = await this.storage.getFileView(
+                conf.appwriteBucketId,
+                FileId
+            )
+            if(!fileUrl)throw new Error("fileUrl is falsy!")
+
+            return fileUrl;
+        } catch (error) {
+            console.log("Appwrite Auth :: GetFileForView :: Error ", error);
+            return null;
+        }
+
     }
 
 };

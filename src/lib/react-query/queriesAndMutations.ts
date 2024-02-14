@@ -7,7 +7,7 @@ import {
 import authService from "../appwrite/auth";
 import { INewPost, INewUser, IUpdatePost } from "@/types";
 import { QUERY_KEYS } from "./queryKeys";
-import { string } from "zod";
+
 
 export const useCreateNewUserAccount = ()=>{
     return useMutation({
@@ -148,5 +148,13 @@ export const useDeletePost = ()=>{
                 queryKey : [QUERY_KEYS.GET_RECENT_POSTS]
             })
         }
+    })
+}
+
+export const useFullFileUrl=(fileId:string,isEnabled:boolean)=>{
+    return useQuery({
+        queryKey : [QUERY_KEYS.GET_FILE_PREVIEW,fileId],
+        queryFn : ()=>authService.GetFileForView(fileId),
+        enabled:isEnabled,
     })
 }

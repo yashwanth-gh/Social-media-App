@@ -168,7 +168,7 @@
   }
 
   .post_details-img {
-    @apply h-80 lg:h-[480px] xl:w-[48%] rounded-t-[30px] xl:rounded-l-[24px] xl:rounded-tr-none object-cover p-5 bg-dark-1;
+    @apply h-fit w-full lg:max-h-[500px] object-cover bg-color-hunt-2;
   }
 
   .post_details-info {
@@ -244,10 +244,10 @@
   }
 
   .post-card_img {
-    @apply h-64 xs:h-[400px] lg:h-[450px] w-full rounded-[10px] object-cover mb-3;
+    @apply h-64 xs:h-[400px] lg:h-[450px] w-full rounded-[4px] object-cover mb-3;
   }
   .post-panel {
-    @apply  bg-color-hunt-1 w-full flex flex-1 justify-between py-1 rounded-lg;
+    @apply w-full flex flex-1 justify-between py-1 rounded-lg;
   }
 
   /* Topbar */

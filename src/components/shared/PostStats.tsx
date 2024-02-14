@@ -11,14 +11,15 @@ import React, { useState, useEffect } from "react";
 import Loader from "./Loader";
 import { Link } from "react-router-dom";
 import { toast } from "../ui/use-toast";
-import AddComment from "./AddComment";
+import AddComment from "./CommentDialog";
 
 type PostStatsProps = {
   post: Models.Document;
   userId: string;
+  customClassName?:string;
 };
 
-const PostStats = ({ post, userId }: PostStatsProps) => {
+const PostStats = ({ post, userId,customClassName }: PostStatsProps) => {
   const likesList = post.likes.map((user: Models.Document) => user.$id);
 
 
@@ -76,7 +77,7 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
   };
 
   return (
-    <div className="post-panel">
+    <div className= {(customClassName)?`${customClassName} post-panel`:'bg-color-hunt-1 post-panel'}>
       <div className="flex-center gap-2">
         <img
           src={`${
