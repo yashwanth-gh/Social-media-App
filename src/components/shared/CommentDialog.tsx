@@ -4,24 +4,22 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
+import AddComment from "./AddComment";
 
-const AddComment = ({ post }: { post: Models.Document }) => {
+const CommentDialog = ({ post }: { post: Models.Document }) => {
   return (
     <div>
       <Dialog>
         <DialogTrigger>
           <div className="flex justify-center items-center gap-2">
             <img src="/public/assets/icons/comment.svg" alt="like" />
-            <p className="small-medium lg:base-medium">
-              {post.comments.length}
-            </p>
+            <p className="small-medium lg:base-medium">{post.comments}</p>
           </div>
         </DialogTrigger>
         <DialogContent>
@@ -30,17 +28,18 @@ const AddComment = ({ post }: { post: Models.Document }) => {
               Replying to &nbsp;
               <span className="text-blue-400">@{post.creator.name}</span>
             </DialogTitle>
-
+            <AddComment post={post} />
           </DialogHeader>
           <DialogFooter className="sm:justify-start">
             <DialogClose asChild>
-              <Button type="button" variant="secondary" className=' border border-slate-100'>
+              <Button
+                type="button"
+                variant="secondary"
+                className=" border border-slate-100"
+              >
                 Close
               </Button>
             </DialogClose>
-            <Button type="button" className="bg-color-hunt-5 text-color-hunt-1">
-                Post
-              </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -48,4 +47,4 @@ const AddComment = ({ post }: { post: Models.Document }) => {
   );
 };
 
-export default AddComment;
+export default CommentDialog;

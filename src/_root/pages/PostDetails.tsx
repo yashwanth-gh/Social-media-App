@@ -20,11 +20,11 @@ import {
 import CustomDialog from "@/components/shared/CustomDialog";
 import BirdLoader from "@/components/shared/BirdLoader";
 import PostStats from "@/components/shared/PostStats";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import AddComment from "@/components/shared/AddComment";
+
 
 const PostDetails = () => {
-  const [comment, setComment] = useState('');
+
   const { id } = useParams();
   const { data: post, isPending: isPostLoading } = useGetPostById(id || "");
   const { data: fullImageView, isLoading: isLoadingPostImage } = useFullFileUrl(
@@ -50,11 +50,7 @@ const PostDetails = () => {
       console.log("not deleted", res?.status);
     }
   };
-  const handleCommentSubmit = async (e:MouseEvent) => {
-    e.preventDefault();
-    console.log(comment);
-    setComment("");
-  };
+
 
   if (isPostLoading || isPermanentlyDeletePost || isLoadingPostImage) {
     if (isPermanentlyDeletePost) {
@@ -172,8 +168,7 @@ const PostDetails = () => {
           {/* post comments goes here */}
           <div className="flex">
             {/* comment input box */}
-              <Input type="text"placeholder="Your comment" value={comment} onChange={(e)=>setComment(e.target.value)}/>
-              <Button type="button" onClick={handleCommentSubmit}>Subscribe</Button>
+                <AddComment post={post}/>
           </div>
           <div className="h-full overflow-scroll custom-scrollbar">
             {/* all comments are rendered here */}

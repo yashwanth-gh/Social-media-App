@@ -11,7 +11,7 @@ import React, { useState, useEffect } from "react";
 import Loader from "./Loader";
 import { Link } from "react-router-dom";
 import { toast } from "../ui/use-toast";
-import AddComment from "./CommentDialog";
+import CommentDialog from "./CommentDialog";
 
 type PostStatsProps = {
   post: Models.Document;
@@ -94,7 +94,7 @@ const PostStats = ({ post, userId,customClassName }: PostStatsProps) => {
       </div>
 
       <div className="flex-center gap-2">
-          <AddComment post={post}/>
+          <CommentDialog post={post}/>
       </div>
 
       <div className="flex-center gap-2">
